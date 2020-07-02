@@ -6,8 +6,8 @@ module.exports = {
     devServer: {
         proxy: {
             '/api': {
-                target: 'http://106.13.201.225:8080/CoffeeTest/', //API服务器的地址
-                /* http://localhost:8088 */
+                target: 'http://106.13.201.225:8080/CoffeeOrderService/', //API服务器的地址
+                /* http://localhost:8088/CoffeeOrderService/ */
                 changeOrigin: true
             }
         }
