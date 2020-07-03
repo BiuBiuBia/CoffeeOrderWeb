@@ -18,7 +18,7 @@
                 </template>
             </i-table>    
         </Row>
-        <Modal v-model="modal" title="Title" loading @on-ok="asyncSubmit" ok-text="新建用户">
+        <Modal v-model="modal" title="新建用户" loading @on-ok="asyncSubmit" ok-text="新建">
             <Form :model="userInfo" label-position="left" :label-width="80">
                 <FormItem label="用户名">
                     <i-input v-model="userInfo.userName"></i-input>
@@ -26,10 +26,10 @@
                 <FormItem label="密码">
                     <i-input v-model="userInfo.password"></i-input>
                 </FormItem >
-                <FormItem label="电子邮箱">
+                <FormItem label="电话">
                     <i-input v-model="userInfo.telephone"></i-input>
                 </FormItem >
-                <FormItem label="电话">
+                <FormItem label="电子邮箱">
                     <i-input v-model="userInfo.email"></i-input>
                 </FormItem >
             </Form>
@@ -77,7 +77,7 @@ export default {
                this.userlist = this.data;
             })
             .catch(error=>{
-               if (error.response) {
+                if (error.response) {
                     if (error.response.status >= 400 && error.response.status < 600)
                         this.$Message.error(error.message);
                     else 
@@ -96,7 +96,11 @@ export default {
         delUser(row) {
             axios.post("/api/usermanage/deleteUser", {userId: row.userId})
             .then(response => {
-               if(response.data.success) this.$Message.success("删除成功");
+               if(response.data.success) 
+               {
+                   this.$Message.success("删除成功");
+                   this.getUserlist;
+               }
             })
             .catch(error => {
                 if (error.response) {
@@ -109,10 +113,13 @@ export default {
                 }
             });
         },
-        async asyncSubmit() {
+        asyncSubmit() {
             axios.post("/api/usermanage/regist", {...this.userInfo})
             .then(response => {
-                if(response.data.success) this.$Message.success("新建成功");
+                if(response.data.success) {
+                    this.$Message.success("新建成功");
+                    this.getUserlist;
+                }
             })
             .catch(error => {
                 if (error.response) {
@@ -128,6 +135,7 @@ export default {
                 this.modal = false;
             });
         }
+       
     }
 }
 </script>
