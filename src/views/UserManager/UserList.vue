@@ -71,12 +71,16 @@ export default {
     },
     methods:{
         getUserlist() {
-            axios.post("/api/usermanage/getUserList", {})
-            .then(response=>{
-               this.data = response.data;
-               this.userlist = this.data;
+            axios.post("/CoffeeOrderService/api/usermanage/getUserList", {})
+            .then(response => {
+                if(response.data.success) {
+                    this.data = response.data.data;
+                    this.userlist = this.data;
+                } else {
+                    this.$Message.warning(response.data.msg || "未知错误");
+                }
             })
-            .catch(error=>{
+            .catch(error => {
                 if (error.response) {
                     if (error.response.status >= 400 && error.response.status < 600)
                         this.$Message.error(error.message);
@@ -94,13 +98,15 @@ export default {
             this.userlist = this.data.filter(e => e.userName.indexOf(condition) !== -1 );
         },
         delUser(row) {
-            axios.post("/api/usermanage/deleteUser", {userId: row.userId})
+            axios.post("/CoffeeOrderService/api/usermanage/deleteUser", {userId: row.userId})
             .then(response => {
-               if(response.data.success) 
-               {
-                   this.$Message.success("删除成功");
-                   this.getUserlist;
-               }
+                if(response.data.success) 
+                {
+                    this.$Message.success("删除成功");
+                    this.getUserlist;
+                } else {
+                    this.$Message.warning(response.data.msg);
+                }
             })
             .catch(error => {
                 if (error.response) {
@@ -114,11 +120,13 @@ export default {
             });
         },
         asyncSubmit() {
-            axios.post("/api/usermanage/regist", {...this.userInfo})
+            axios.post("/CoffeeOrderService/api/usermanage/regist", {...this.userInfo})
             .then(response => {
                 if(response.data.success) {
                     this.$Message.success("新建成功");
-                    this.getUserlist;
+                    this.getUserlist();
+                } else {
+                    this.$Message.warning(response.data.msg);
                 }
             })
             .catch(error => {
