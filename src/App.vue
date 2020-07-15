@@ -9,12 +9,14 @@
 <script>
 import adminLayout from "@/layouts/admin.vue";
 import emptyLayout from "@/layouts/empty.vue";
-import userLayout from "@/layouts/user.vue";
+import userheaderLayout from "@/layouts/userheader.vue";
+import accountLayout from "@/layouts/account.vue";
 export default {
     components: {
         'admin-layout': adminLayout,
         'empty-layout': emptyLayout,
-        'user-layout':userLayout
+        'userheader-layout':userheaderLayout,
+        'account-layout':accountLayout
     },
     data() {
         return{
