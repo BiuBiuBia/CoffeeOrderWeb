@@ -6,12 +6,12 @@
                     <div class="layout-logo">咖啡厅点餐系统</div>
                     <div class="layout-nav">
                         <Dropdown>
-                            <Button type="primary">
-                                本用户
+                            <Button ghost type="text">
+                                {{login ? userInfo.userName : "未登录"}}
                                 <Icon type="ios-arrow-down"></Icon>
                             </Button>
                             <DropdownMenu slot="list">
-                                <DropdownItem name="profile" @click.native="$router.push({'name': 'UserDetail'})">个人中心</DropdownItem>
+                                <DropdownItem name="profile" @click.native="$router.push({'name': 'UserCenter'})">个人中心</DropdownItem>
                                 <DropdownItem name="logout" @click.native="logout">注销</DropdownItem>
                             </DropdownMenu>
                         </Dropdown>
@@ -28,7 +28,7 @@
                             </template>
                             <MenuItem name="MenuList" :to="{name: 'MenuList'}">菜单管理</MenuItem>
                             <MenuItem name="MenuDetail" :to="{name: 'MenuDetail'}">菜品管理</MenuItem>
-                            <MenuItem name="1-3">菜品分析</MenuItem>
+                            <MenuItem name="MenuAnalyze" :to="{name: 'MenuAnalyze'}">菜品分析</MenuItem>
                         </Submenu>
                         <Submenu name="2">
                             <template slot="title">
@@ -36,14 +36,21 @@
                                 用户管理
                             </template>
                             <MenuItem name="UserList" :to="{name: 'UserList'}">用户列表</MenuItem>
-                            <MenuItem name="2-2">角色管理</MenuItem>
+                            <MenuItem name="2-2" :to="{name: 'RoleManager'}">角色管理</MenuItem>
                         </Submenu>
                         <Submenu name="3">
+                            <template slot="title">
+                                <Icon type="ios-keypad"></Icon>
+                                订单管理
+                            </template>
+                            <MenuItem name="adminOrderList" :to="{name: 'adminOrderList'}">订单列表</MenuItem>
+                        </Submenu>
+                        <Submenu name="4">
                             <template slot="title">
                                 <Icon type="ios-analytics"></Icon>
                                 系统配置
                             </template>
-                            <MenuItem name="3-1">关于</MenuItem>
+                            <MenuItem name="4-1">关于</MenuItem>
                         </Submenu>
                     </Menu>
                 </Sider>
@@ -63,8 +70,13 @@
     export default {
         data() {
             return {
-                activeMenu: this.$route.name
+                activeMenu: this.$route.name,
+                userInfo: {},
+                login: false
             }
+        },
+        mounted() {
+            this.getUserInfo();
         },
         methods: {
             logout() {
@@ -78,6 +90,30 @@
                     setTimeout(() => {
                         this.$router.push({name: "LogIn"});
                     }, 2000);
+                })
+                .catch(error => {
+                    if (error.response) {
+                        if (error.response.status >= 400 && error.response.status < 600)
+                            this.$Message.error(error.message);
+                        else 
+                            this.$Message.warning(error.message);
+                    } else {
+                        this.$Message.error("无法发送请求");
+                    }
+                });
+            },
+            getUserInfo() {
+                axios.post("/CoffeeOrderService/api/usermanage/getUserInfo", {})
+                .then(response => {
+                    if(response.data.success) {
+                        this.userInfo = response.data;
+                        this.login = true;
+                    } else {
+                        if(response.data.errorcode === 403)
+                        this.login = false;
+                        else
+                        this.$Message.warning(response.data.msg || "未知错误");
+                    }
                 })
                 .catch(error => {
                     if (error.response) {

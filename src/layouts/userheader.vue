@@ -3,7 +3,7 @@
         <Layout>
             <Header>
                 <Menu mode="horizontal" theme="light" active-name="1">
-                    <Row type="flex" align="middle" class="layout-logo">
+                    <Row type="flex" align="middle" class="layout-logo" @click.native="toHome">
                         <img src="@/assets/coffee-logo.png" width="60px" height="40px" alt="coffee-logo"/> 
                         <span>全能咖啡厅</span>
                     </Row>
@@ -18,8 +18,8 @@
                             <template slot="title">
                                 <Icon type="md-person"/>我的账户
                             </template>
-                            <MenuItem name="ShoppingCart" :to="{name: 'ShoppingCart'}">购物车</MenuItem >
-                            <MenuItem name="center">个人中心</MenuItem >
+                            <MenuItem name="ShoppingCart" @click.native="toCart">购物车</MenuItem >
+                            <MenuItem name="center" @click.native="toAccount">个人中心</MenuItem >
                         </Submenu>
                         <Submenu name="4">
                             <template slot="title">
@@ -46,6 +46,19 @@
 
 <script>
 export default {
+    methods:{
+        toHome(){
+            this.$router.push({name: 'Home'});
+        },
+        toCart(){
+            const {href} =this.$router.resolve({name: 'ShoppingCart'});
+            window.open(href, '_blank');
+        },
+        toAccount(){
+            const {href} =this.$router.resolve({name: 'OrderList'});
+            window.open(href, '_blank');
+        }
+    }
     
 }
 </script>
@@ -64,6 +77,7 @@ export default {
     float: left;
     position: relative;
     margin-left: 64px;
+    cursor: pointer; 
 }
 .layout-nav{
     width: 480px;
