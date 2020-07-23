@@ -5,19 +5,22 @@
                 <Button type="primary" @click="modal = true">新建用户</Button>
             </i-col>
             <i-col>
+                <Button type="primary" @click="exportTable">导出Excel</Button>
+            </i-col>
+            <i-col>
                 <i-input placeholder="请输入用户名进行搜索" search enter-button @on-search="searchUser"></i-input>
             </i-col>
         </Row>
         <Divider />
         <Row>
-            <i-table stripe :columns="columns" :data="userlist">
+            <i-table stripe :columns="columns" :data="userlist" ref="userTable">
                 <template v-slot:action="props">
                     <i-button type="primary" @click="toDetail(props.row)">详情</i-button>
                     &nbsp;
                     <i-button type="error" @click="delUser(props.row)">删除</i-button>
                 </template>
             </i-table>
-            <Page :total="dataCount" :page-size="pageSize" show-total show-sizer @on-page-size-change="pageSizeChange" @on-change="changePage" style="margin-top:15px;"/>    
+            <Page :total="dataCount" :page-size-opts="sizeArray" :page-size="pageSize" show-total show-sizer @on-page-size-change="pageSizeChange" @on-change="changePage" style="margin-top:15px;"/>    
         </Row>
         <Modal v-model="modal" title="新建用户" loading @on-ok="asyncSubmit" ok-text="新建">
             <Form :model="userInfo" label-position="left" :label-width="80">
@@ -61,6 +64,7 @@ export default {
                     slot: 'action'
                 }
             ],
+            sizeArray: [10,20,30,40,1000],
             userlist: [],
             //每页显示用户数
             pageSize:15,
@@ -113,25 +117,32 @@ export default {
             this.userlist = this.data.filter(e => e.userName.indexOf(condition) !== -1 );
         },
         delUser(row) {
-            axios.post("/CoffeeOrderService/api/usermanage/deleteUser", {userId: row.userId})
-            .then(response => {
-                if(response.data.success) 
-                {
-                    this.$Message.success("删除成功");
-                    this.getUserlist();
-                } else {
-                    this.$Message.warning(response.data.msg);
-                }
-            })
-            .catch(error => {
-                if (error.response) {
-                    if (error.response.status >= 400 && error.response.status < 600)
-                        this.$Message.error(error.message);
-                    else 
-                        this.$Message.warning(error.message);
-                } else {
-                    this.$Message.error("无法发送请求");
-                }
+            this.$Modal.confirm({
+                title: "删除提示",
+                content: "<p>是否要删除此用户?</p>",
+                onOk: () => {
+                    axios.post("/CoffeeOrderService/api/usermanage/deleteUser", {userId: row.userId})
+                    .then(response => {
+                        if(response.data.success) 
+                        {
+                            this.$Message.success("删除成功");
+                            this.getUserlist();
+                        } else {
+                            this.$Message.warning(response.data.msg);
+                        }
+                    })
+                    .catch(error => {
+                        if (error.response) {
+                            if (error.response.status >= 400 && error.response.status < 600)
+                                this.$Message.error(error.message);
+                            else 
+                                this.$Message.warning(error.message);
+                        } else {
+                            this.$Message.error("无法发送请求");
+                        }
+                    });
+                },
+                onCancel: () => {}
             });
         },
         asyncSubmit() {
@@ -157,8 +168,15 @@ export default {
             .finally(() => {
                 this.modal = false;
             });
+        },
+        exportTable() {
+            this.$refs.userTable.exportCsv({
+                filename: "用户列表",
+                original: false,
+                columns: this.columns,
+                data: this.userlist
+            });
         }
-       
     }
 }
 </script>

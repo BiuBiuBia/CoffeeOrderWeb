@@ -18,6 +18,13 @@ const routes = [
     },
     //注册页
     {
+      path: '/usermanager/forgotpwd',
+      name: 'ForgotPwd',
+      meta: {layout: "empty"},
+      component: () => import(/* webpackChunkName: "users" */ '@/views/LogIn/ForgotPwd.vue')
+    },
+    //找回密码页
+    {
       path: '/usermanager/regist',
       name: 'Regist',
       meta: {layout: "empty"},
@@ -44,13 +51,6 @@ const routes = [
       meta: {layout: "admin"},
       component: () => import(/* webpackChunkName: "menu" */ '@/views/MenuManager/MenuDetail.vue')
     },
-    //餐点分析页
-    {
-      path: '/menumanager/menuanalyze',
-      name: 'MenuAnalyze',
-      meta: {layout: "admin"},
-      component: () => import(/* webpackChunkName: "menu" */ '@/views/MenuManager/MenuAnalyze.vue')
-    },
     //用户列表页
     {
       path: '/usermanager/userlist',
@@ -67,11 +67,20 @@ const routes = [
     },
     //个人中心
     {
+
       path: '/usermanager/usercenter',
       name: 'UserCenter',
       meta: {layout: "admin"},
       component: () => import(/* webpackChunkName: "users" */ '@/views/UserManager/UserCenter.vue')
     },
+    //前台个人中心
+    {
+      path: '/usermenu/usercenter',
+      name: 'UserMenuCenter',
+      meta: {layout: "account"},
+      component: () => import(/* webpackChunkName: "users" */ '@/views/UserManager/UserCenter.vue')
+    },
+
     //前台用户订餐页面
     {
       path: '/usermenu/ordermenu',
@@ -79,12 +88,19 @@ const routes = [
       meta: {layout: "userheader"},
       component: () => import(/* webpackChunkName: "order" */ '@/views/UserMenu/OrderMenu.vue')
     },
+    //菜品页面
+    {
+      path: '/menumanager/menuanalyze',
+      name: 'MenuAnalyze',
+      meta: {layout: "admin"},
+      component: () => import(/* webpackChunkName: "order" */ '@/views/MenuManager/MenuAnalyze.vue')
+    },
     //个人中心页面
     {
       path: '/profile/profile',
       name: 'Profile',
       meta: {layout: "empty"},
-      component: () => import(/* webpackChunkName: "users" */ '@/views/Profile/Profile.vue')
+      component: () => import(/* webpackChunkName: "order" */ '@/views/Profile/Profile.vue')
     },
     //前台用户购物车页面
     {
@@ -102,7 +118,7 @@ const routes = [
     },
     //历史订单详细页
     {
-        path: '/usermenu/orderlist',
+        path: '/usermenu/orderdetail',
         name: 'OrderDetail',
         meta: {layout: "account"},
         component: () => import(/* webpackChunkName: "order" */ '@/views/UserMenu/OrderDetail.vue')
@@ -128,19 +144,26 @@ const routes = [
       meta: {layout: "admin"},
       component: () => import(/* webpackChunkName: "role" */ '@/views/UserManager/RoleManager.vue')
     },
-    //后台角色管理页
+    //新建订单页
     {
-      path: '/userManager/forgotpwd',
-      name: 'ForgotPwd',
-      meta: {layout: "empty"},
-      component: () => import(/* webpackChunkName: "users" */ '@/views/LogIn/ForgotPwd.vue')
+        path: '/usermenu/createorder',
+        name: 'CreateOrder',
+        meta: {layout: "userheader"},
+        component: () => import(/* webpackChunkName: "role" */ '@/views/UserMenu/CreateOrder.vue')
     },
-    //地址列表
+    //地址薄
     {
-      path: '/usermenu/addressList',
-      name: 'addressList',
-      meta: {layout: "account"},
-      component: () => import(/* webpackChunkName: "order" */ '@/views/UserMenu/AddressList.vue')
+        path: '/usermenu/addresslist',
+        name: 'addressList',
+        meta: {layout: "account"},
+        component: () => import(/* webpackChunkName: "role" */ '@/views/UserMenu/AddressList.vue')
+    },
+    //餐点分析页
+    {
+      path: '/menumanager/menuanalyze',
+      name: 'MenuAnalyze',
+      meta: {layout: "admin"},
+      component: () => import(/* webpackChunkName: "menu" */ '@/views/MenuManager/MenuAnalyze.vue')
     },
 ]
 export default routes;

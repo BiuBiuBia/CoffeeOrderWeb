@@ -3,24 +3,24 @@
         <div>
             <Carousel loop autoplay :autoplay-speed="3500" :radius-dot="true" arrow="hover" style="margin-top: 40px">
                 <CarouselItem>
-                    <div class="carousel-pic">1</div>
+                     <img src="@/assets/Carousel1.jpg"  style="width:100%" />
                 </CarouselItem>
                 <CarouselItem>
-                    <div class="carousel-pic">1</div>
+                    <img src="@/assets/Carousel2.jpg"  style="width:100%" />
                 </CarouselItem>
                 <CarouselItem>
-                    <div class="carousel-pic">1</div>
+                    <img src="@/assets/Carousel3.jpg"  style="width:100%" />
                 </CarouselItem>
             </Carousel>
-            <Card class="login-box" dis-hover :padding="24">
+            <Card class="login-box" dis-hover :padding="24" style="margin-right:6%;margin-top:4%;">
                 <Tabs value="name1">
                     <TabPane label="密码登录" name="name1">
                         <Form  style="margin-top: 16px" :model="logInModel" :rules="rules" ref="login">
                             <FormItem prop="userName">
-                                <Input prefix="md-person" placeholder="请输入账号" size="large" clearable v-model="logInModel.userName"/>
+                                <Input prefix="md-person" :maxlength="20" max placeholder="请输入账号" size="large" clearable v-model="logInModel.userName"/>
                             </FormItem>
                             <FormItem prop="password">
-                                <Input prefix="ios-lock" placeholder="请输入密码" size="large" type="password" @on-enter="logIn" v-model="logInModel.password" password/>
+                                <Input prefix="ios-lock" :maxlength="14" placeholder="请输入密码" size="large" type="password" @on-enter="logIn" v-model="logInModel.password" password/>
                             </FormItem>
                             <FormItem>
                                 <Button type="primary" long  size="large" keypress.enter.native ref="loginbutton" :loading="loading" @click="logIn">登录</Button>
@@ -59,22 +59,43 @@
                 </Tabs>
             </Card>
         </div>
-        <Row type="flex" justify="space-between" style="margin-top: 24px">
-            <i-col span="4" v-for="index in 4" :key="index">
-                <Card>
-                    <div>
-                        <img src="../assets/coffee-logo.png" alt="coffee-logo2" width="100%"/>
-                        <h2>新品推送</h2>
+        <Row type="flex" style="margin-top: 24px" :gutter="24"  v-if="meal">
+            <i-col span="6" v-for="index in 4" :key="index">
+                <Card v-if="meal[index]">
+                    <div class="good">
+                        <Tag class="tag" color="orange">店长推荐</Tag>
+                        <img
+                                :src="`/CoffeeOrderService/api/menu/downloadImg?mealId=${meal[index].mealId}`"
+                                alt="coffee-logo2"
+                                style="width:60%;height:150px"
+                                :onabort="defaultImg"
+                                :onerror="defaultImg"
+                            />
+                        <Row>
+                            <div class="title">{{meal[index].mealName}}</div>
+                            <div class="desc">{{meal[index].mealDetail}}</div>
+                            <span class="price">{{meal[index].price}}元</span>
+                        </Row>
                     </div>
                 </Card>
             </i-col>
         </Row>
-        <Row type="flex" justify="space-between" style="margin-top: 24px; margin-bottom: 24px">
-            <i-col span="4" v-for="index in 4" :key="index">
-                <Card>
-                    <div>
-                        <img src="../assets/coffee-logo.png" alt="coffee-logo2" width="100%"/>
-                        <h2>新品推送</h2>
+        <Row type="flex" justify="space-between" style="margin-top: 24px; margin-bottom: 24px" :gutter="24">
+            <i-col span="6" v-for="index in 4" :key="index">
+                <Card v-if="meal[index+4]">
+                    <div class="good">
+                        <Tag class="tag" color="green">降价促销</Tag>
+                       <img
+                                :src="`/CoffeeOrderService/api/menu/downloadImg?mealId=${meal[index+4].mealId}`"
+                                alt="coffee-logo2"
+                                style="width:60%;height:150px"
+                                :onabort="defaultImg"
+                                :onerror="defaultImg"
+                            />
+                        <div class="title">{{meal[index+4].mealName}}</div>
+                        <div class="desc">{{meal[index+4].mealDetail}}</div>
+                        <span class="price">{{meal[index+4].price-4}}元</span>
+                        <s class="price" style="color: #c5c8ce;">{{meal[index+4].price}}元</s>
                     </div>
                 </Card>
             </i-col>
@@ -105,10 +126,15 @@ import app from "@/common/app.js"
                 loading: false,
                 count: 0,
                 codeTip: "获取验证码",
-                waitForCount: false
+                waitForCount: false,
+                meal:[],
+                defaultImg:
+                'this.src="' + require("@/assets/coffee-logo.png") + '"',
             }
         },
-        mounted() {},
+        mounted() {
+            this.getAllmeal();
+        },
         created() {
             if(app.loginSettings.rememberPwd){
                 this.logInModel = app.loginSettings;
@@ -195,7 +221,21 @@ import app from "@/common/app.js"
                         console.log(valid)
                     }
                 });
-            }
+            },
+            getAllmeal() {
+                axios
+                    .post("/CoffeeOrderService/api/menu/getAllMeal", {})
+                    .then(response => {
+                        if (response.data.success) {
+                            this.meal = response.data.data;
+                        } else {
+                            this.$Message.error("获取推荐失败");
+                        }
+                    })
+                    .catch(error => {
+                        console.error(error.data);
+                    });
+                },
            
         }
 }
@@ -212,5 +252,29 @@ import app from "@/common/app.js"
     background: cornflowerblue;
     height: 436px;
     width: 100%;
+}
+
+.good{
+    text-align: center;
+}
+
+.good .title{
+    font-size: 16px;
+    font-weight: 700;
+    margin: 8px 0;
+}
+.good .desc{
+    font-size: 14px;
+    color: #808695;
+}
+.good .price{
+    font-size: 14px;
+    color: #ff6700;
+    margin: 8px 0;
+}
+.good .tag{
+    position: absolute;
+    top: 10px;
+    right: 10px;
 }
 </style>

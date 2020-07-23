@@ -1,6 +1,6 @@
 <template>
     <Row type="flex" justify="center" style="margin-top: 15vh">
-        <i-col span="4">
+        <i-col span="5">
             <Card dis-hover>
                 <template v-slot:title>
                     <Row style="font-size: 28px; text-align: center">
@@ -9,11 +9,11 @@
                 </template>
                 <Row>
                     <Form :model="logInModel" :rules="rules" ref="login">
-                        <FormItem prop="userName" label="用户名">
-                            <i-input v-model="logInModel.userName" placeholder="请输入您的用户名" size="large"></i-input>
+                        <FormItem prop="userName"  label="用户名">
+                            <i-input v-model="logInModel.userName" :maxlength="20" placeholder="请输入您的用户名" size="large"></i-input>
                         </FormItem>
                         <FormItem prop="password" label="密码">
-                            <i-input v-model="logInModel.password" placeholder="请输入您的密码" size="large" @on-enter="logIn" type="password" password></i-input>
+                            <i-input v-model="logInModel.password" :maxlength="14" placeholder="请输入您的密码" size="large" @on-enter="logIn" type="password" password></i-input>
                         </FormItem>
                         <FormItem>
                             <Button type="primary" @click="logIn" :loading="loading" size="large" long>登录后台</Button>

@@ -89,7 +89,9 @@ export default {
             selectCounts:0,
             selectPrice:0,
             selectmeal:[],
-            order:{data:[]}
+            order:{
+                data:[]
+            }
         };
     },
     mounted() {
@@ -128,7 +130,8 @@ export default {
             axios
                 .post("/CoffeeOrderService/api/shoppingcart/addShoppingCart", {
                     mealId: this.mealList[index].mealId,
-                    price: this.mealList[index].price
+                    price: this.mealList[index].price,
+                    addend: 1
                 })
                 .then(response => {
                     if (!response.data.success) {
@@ -185,38 +188,39 @@ export default {
         createOrder(){
             if(this.selectmeal.length==0){
                 this.$Modal.warning({
-                            title:"提示",
-                            content:"尚未选中任何餐点" 
-                        });
+                        title:"提示",
+                        content:"尚未选中任何餐点" 
+                    });
                 return
             }
             this.order.data=[];
-             for(var i=0;i<this.selectmeal.length;i++){
-                 this.order.data.push({
-                     mealId:this.selectmeal[i].mealId,
-                     amount:this.selectmeal[i].quality
-                 })
+            for(let i = 0; i < this.selectmeal.length; i++){
+                this.order.data.push({
+                    mealId:this.selectmeal[i].mealId,
+                    quality:this.selectmeal[i].quality,
+                    mealName:this.selectmeal[i].mealName,
+                    price:this.selectmeal[i].price,
+                    allprice:this.getSingleAllprice(this.selectmeal[i].quality,this.selectmeal)
+                })
             }
-            axios.post("/CoffeeOrderService/api/ordermanage/createOrder",this.order)
-            .then(response=>{
-                if(response.data.success){
-                    for(var i=0;i<this.selectmeal.length;i++){
-                        axios.post("/CoffeeOrderService/api/shoppingcart/delShoppingCart",{mealId:this.selectmeal[i].mealId})
-                        .then()
-                        .catch(error=>{
-                            this.$Message.error(error.data.msg);
-                        })
-                    }
-                    this.getAllShop();
-                    this.$Message.success("创建成功");
-                }
-                else{
-                    this.$Message.error("创建失败");
-                }
-            })
-            .catch(error=>{
-                this.$Message.error(error.data.msg);
-            })
+            // let guid = this.makeGuid();
+            let data = {
+                selectMeal: this.order.data,
+                total: this.getSelectPrice
+            };
+            localStorage.removeItem("shoppingcart");
+            localStorage.setItem("shoppingcart", JSON.stringify(data))
+            this.$router.push({
+                name: "CreateOrder" //,
+                //query: {orderPreId: guid} 
+            });
+        },
+        makeGuid() {
+            return 'xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                let r = Math.random() * 16 | 0,
+                    v = c == 'x' ? r : (r&0x3|0x8);
+                return v.toString(16);
+            });
         }
     }
 };
